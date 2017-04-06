@@ -1,0 +1,17 @@
+#Dirty word list. Lines beginning with # are considered comments.
+#Comments must be on their own line to be considered
+#Empty lines are also ignored
+
+#Static words are treated case insensitive
+rgordon
+admin
+error
+warn
+js
+php
+
+#Regular expressions take the form /pattern/flags where flags are optional. If no flags are added the i flag is added automatically.
+#The m flag will have no effect due to the fact that the parser reads one line into memory at a time to reduce memory overhead
+
+# IpV4 Address Regex
+/((25[0-5])|(2[0-4][0-9])|(1[0-9][0-9])|([1-9][0-9])|([0-9]))[.]((25[0-5])|(2[0-4][0-9])|(1[0-9][0-9])|([1-9][0-9])|([0-9]))[.]((25[0-5])|(2[0-4][0-9])|(1[0-9][0-9])|([1-9][0-9])|([0-9]))[.]((25[0-5])|(2[0-4][0-9])|(1[0-9][0-9])|([1-9][0-9])|([0-9]))/

@@ -1,0 +1,35 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    diffy (3.2.0)
+    highline (1.7.8)
+    json (2.0.3)
+    mini_portile2 (2.1.0)
+    mysql2 (0.4.5)
+    mysql2 (0.4.5-x86-mingw32)
+    nokogiri (1.7.1)
+      mini_portile2 (~> 2.1.0)
+    nokogiri (1.7.1-x86-mingw32)
+      mini_portile2 (~> 2.1.0)
+    rubyzip (1.2.1)
+    win32-api (1.4.8)
+    win32-api (1.4.8-x86-mingw32)
+    win32-window (0.2.0.pre)
+      win32-api (>= 1.4.8)
+
+PLATFORMS
+  ruby
+  x86-mingw32
+
+DEPENDENCIES
+  diffy
+  highline
+  json
+  mysql2
+  nokogiri
+  rubyzip
+  win32-api
+  win32-window
+
+BUNDLED WITH
+   1.14.6
