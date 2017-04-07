@@ -1,0 +1,184 @@
+# Zapp Utility
+### Purpose
+
+The zapp utility was born out of a need to quickly
+and securely transfer Supportworks&trade; configurations and customizations
+between environments. Situations where the zapp utility
+becomes incredibly useful
+center around deploying customizations from a dev
+environment to production.
+
+### What is it
+
+The Zapp Utility is a command line executable. At its
+core it is a Ruby application bundled with a stand alone
+ruby interpreter, and a handful of useful GNU tools
+packaged for windows.
+
+### Usage
+
+ * Bundle a zapp file of essential configurations required for
+ consultants to perform customizations remotely
+   * `ZappUtility.exe -b -l "Bittercreek Technology, Inc" --outsource`
+   * Add the `-e` flag to encrypt the output using a bundled AES 4096 bit public key
+   * Add the `-e -p` flags to encrypt the output use AES 256 password encryption
+   * Add the `--dwl` flag to exclude certain words or regular expression matches during the creation process
+ * Create a complete backup of the Supportworks Server
+ files for internal use
+   * `zappbuilder.exe -b -l <your server license>`
+ * Diff an existing zapp file against your current Supportworks Server
+   * `zappbuilder.exe -a <path to zapp>`
+
+### Commandline syntax
+
+`-h` Display this help file
+
+`-b --backup` Do a complete backup. The license flag is required.
+
+`-l, --license license`, To whom to license the zapp file. Required with backup flag.
+
+`-m, --manifest manifest.json`, For a custom build, the path of the manifest file to use. Not to be used with --backup
+
+`-w, --workingdir filepath`, Where to save the file. Defaults to Supportworks Server Folder
+
+`-a, --analyze filename`, Analyze a zapp file
+
+`-z --zapp-backup zapp`, Backup a zapp file
+
+`-e, --encrypt`, Encrypt the zapp file using a public/private key or password
+
+`-p, --password`, Encrypt/Decrypt the file using a known password. Overwites the public/private key option
+
+`-de, --decode`, Decodes a base64 zapp file after it has been decrypted
+
+`--skip-schema`, Skip the Supportworks Data schema backup
+
+`--exclude file1,file2,etc`, Files and folders to skip when doing a complete backup. The root of Supportworks Server is assumed
+
+`--outsource`, Restricts the files to a smaller range of files typically required by consultants when doing customizations
+
+`--dwl file`, Provide a dirty word list to exclude files matching words on this list regardless of case. List may also contain expressions of the format `/regexpattern/` in which case the `i` qualifier is assumed
+
+### Creating a custom manifest
+
+The Zapp Utility supports creating custom packages of individual
+files and folders as well as making complete and partial backups.
+When creating a custom package the Manifest.json file tells
+the utility what to include and how to include it.
+When building the manifest file, all paths are relative to your
+supportworks server directory.
+
+An example JSON file is depicted and explained below.
+ Any or all of these options may be excluded from
+ the JSON file with the exception of
+ `name`, `license`, and `version`. All other options
+ must reside under the `install_actions` property.
+
+
+    {
+        "name": "test manifest",
+        "license": "Bittercreek Technology, Inc",
+        "version": "1.0.0",
+        "install_actions" {
+            "folders": [
+                {"path": "html/webclient", "recursive": "yes", "match": "*.js"}
+            ],
+            "files": ["data/itsm.ddf"],
+            "dataImports": [{"import": "idata/defaultdata/swlist_data.xml", "db": "swdata"}],
+            "sqlQueries": [{"query": "update opencall set custom_a = 'test'", "db": "swdata"}],
+            "reports": ["idata/system_reports.xml"],
+            "excludes": ["html/webclient/*min*"],
+            "schema": "idata/dbschema.xml"
+        }
+    }
+
+
+* **name**: The name of the application. Will become the name of the zapp file, and the name listed on installed applications in the supportworks server configuration. Spaces are replaced with underscores automatically
+* **license**: The case sensitive license to be applied to the application. If you are unsure what this should be please contact support.
+* **folders**: An array of JSON objects
+  * **path**: The path of the folder to include
+  * **recursive**: whether to recur the folder
+     match: The type of file to include from the folder (see wildcards section)
+* **files**: An array of files to include
+* **dataImports**: An array of data JSON objects that represent data imports to run
+  * **import**: Path to the import xml file
+  * **db**: The database to run the import against (swdata or sw_systemdb)
+* **sqlQueries**: An array of JSON objects that represent sql queries to be executed
+  * **query**: Sql query to be executed
+  * **db**: Database to execute the query against
+* **reports**: An array of xml files representing reports to import. These files are generated by right clicking a report and choosing export
+* **excludes**: An array of folders and files to exclude even if the same is included in folders or files elsewhere. The paths support the same wild card features as the matches parameter on folders. See wildcards section.
+* **version**: The version number to place along side the application name in the server configuration utility
+* **schema**: The path to the xml schema you wish to update the database with.
+
+
+**Data Imports**
+
+The application manifest supports data imports, however these are not the same imports that are run using the data import tool supportworks supplies. These are xml files that are defined as recordset and record objects. See below for an example.
+
+    <recordset table=“h_dashboard_boards” skipiftablehasdata=“1”>
+       <record>
+            <h_uraccess>0</h_uraccess>
+            <h_uidaccess />
+            <h_layout>50:50</h_layout>
+            <h_accessrights />
+            <h_dashboard_id>1</h_dashboard_id>
+            <h_title>Incident_management</h_title>
+            <h_owner>admin</h_owner>
+            <h_fk_dbg>2</h_fk_dbg>
+       </record>
+    </recordset>
+
+
+**Wildcards**
+
+The application builder uses wild name matching similar to Windows 95:
+* '*' means a sequence of arbitrary characters.
+* '?' means any character.
+
+The Zapp Utility doesn't use the system
+wildcard parser, and it doesn't follow the archaic
+rule by which \*.\* means any file. The Zapp Utility
+treats \*.\* as matching the name of any
+file that has an extension. To process all files,
+you must use a * wildcard.
+Examples:
+
+* *.txt	means all files with an extension of ".txt"
+* ?a*	means all files with a second character of "a"
+* *1*	means all names that contains character "1"
+* *.*.*	means all names that contain two at least "." characters
+
+*The default wildcard "*.*" will be used if there
+is no filename/wildcard specified.*
+
+A slash (‘/') at the end of a path means a directory. Without a Slash (‘/') at the end of the path, the path can refer either to a file or a directory.
+
+### Dirty Word List
+
+The dirty word list is a plain text file of any extension.
+Each line represents a word that would tell the
+ZappUtility to exclude the file. Patterns may
+consist of static words, or regular expressions
+of the form `/regexp/`. Regexp flags are ignored
+and the case insensitive i flag is added implicitly.
+Static words are compared as a whole and may even
+include complete phrases, provided they are on
+one line. In all cases the words are compared case
+insensitively.
+
+
+The dirty word list supports any regular expression
+syntax that ruby supports. This includes in addition
+to the standard regex syntax, POSIX bracket expressions.
+Additional details and examples of supported expressions
+can be found at the ruby api website here: https://ruby-doc.org/core-2.3.0/Regexp.html
+
+
+The dirty word list also supports comments. Comments begin with a pound ( # ) and must remain on one line. If multiple lines are required for the comment, each line must begin with a pound ( # ). Pound signs may be used in an exclusion provided the word does not start with a pound. In the case that you need to exclude a word that does begin with a pound, you can use a regular expression.
+
+
+Empty lines are also ignored by the dirty word list.
+
+
+See the included `dwl.txt` in the sources for an example
