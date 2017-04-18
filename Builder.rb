@@ -73,9 +73,21 @@ module ZappBuilder
         FileUtils::mkdir_p File.join(@staging_directory, 'data', '_dd_data', 'backup')
         # move the schema definition
         unless manifest.schema.empty?
-          File.open(File.join(@staging_directory, "#{Pathname(manifest.schema).basename}"), "wb") do |schema|
-            File.foreach(manifest.schema) do |line|
-              schema.puts line
+          begin
+            File.open(File.join(@staging_directory, "#{Pathname(manifest.schema).basename}"), "wb") do |schema|
+              File.foreach(manifest.schema) do |line|
+                schema.puts line
+              end
+            end
+          rescue Errno::ENOENT
+            begin
+              File.open(File.absolute_path(File.basename(manifest.schema))) do |schema|
+                File.foreach(manifest.schema) do |line|
+                  schema.puts line
+                end
+              end
+            rescue Errno::ENOENT
+              #pass
             end
           end
         end
