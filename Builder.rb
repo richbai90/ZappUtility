@@ -147,13 +147,18 @@ module ZappBuilder
 
         Dir.chdir(@opts.swserver)
         zapp = File.join(@staging_directory, '..', 'bin', '7za.exe')
+        dbconf = File.join(@staging_directory, File.basename(manifest.schema))
         system(zapp + " a -tzip -ir@\"#{include_file}\" -xr@\"#{exclude_file}\" \"#{filename}.zapp\"")
 
         data_dir = File.join(@staging_directory, 'data')
-        if exclude?(@swdbconf_path)
-          File.delete(@swdbconf_path)
+        # if exclude?(@swdbconf_path)
+        #   File.delete(@swdbconf_path)
+        # end
+        if @opts.skip_schema
+          zapped = system("#{zapp} a \"#{filename}.zapp\" \"#{data_dir}\" -r")
+        else
+          zapped = system("#{zapp} a \"#{filename}.zapp\" \"#{dbconf}\"")
         end
-        zapped = system("#{zapp} a \"#{filename}.zapp\" \"#{data_dir}\" -r")
 
         if @opts.encrypt
           gpg = File.join(@staging_directory, '..', 'bin', 'gpg', 'gpg2.exe')

@@ -141,6 +141,11 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="bundler (v1.12.5, RVM: ruby-2.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="diffy (v3.2.0, RVM: ruby-2.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="highline (v1.7.8, RVM: ruby-2.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="json (v2.0.3, RVM: ruby-2.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mini_portile2 (v2.1.0, RVM: ruby-2.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mysql2 (v0.4.5, RVM: ruby-2.3.0) [gem]" level="application" />
   </component>
   <component name="RModuleSettingsStorage">
     <LOAD_PATH number="0" />

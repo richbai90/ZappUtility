@@ -115,11 +115,11 @@ module ZappBuilder
               end
             }
 
-            unless json[:schema].empty?
+            unless json[:schema].nil? || json[:schema].empty?
               if File.exist?(json[:schema])
                 xml.schema(:name => Pathname(json[:schema]).basename)
               else
-                xml.schema json[:schema]
+                xml.schema(:name => json[:schema])
               end
             end
           }
@@ -155,8 +155,12 @@ module ZappBuilder
               end
             }
 
-            unless json[:schema].empty?
-              xml.schema(:name => Pathname(@json[:schema]).basename)
+            unless json[:schema].nil? || json[:schema].empty?
+              if File.exist?(json[:schema])
+                xml.schema(:name => Pathname(json[:schema]).basename)
+              else
+                xml.schema(:name => json[:schema])
+              end
             end
           }
           xml.copyActions {
@@ -248,7 +252,7 @@ module ZappBuilder
           when 'reportImport'
             manifest.reports({:action => action}, child['file'])
           when 'schema'
-            manifest.schema child['name']
+            manifest.schema child['name'] || ''
           else
             next
         end
