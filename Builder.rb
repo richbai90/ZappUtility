@@ -194,7 +194,7 @@ module ZappBuilder
         end
       ensure
         if @opts.for_outsource
-          system("#{zapp} a \"#{filename}.7z\" \"#{filename}\" -t7z -m0=LZMA2:d256m:fb64 -mx9 ")
+          system("#{zapp} a \"#{filename}.7z\" \"#{filename}\" -t7z -m0=LZMA2 -mx9 ")
           if File.exist?(filename)
             File.delete(filename)
             filename = filename + '.7z'
